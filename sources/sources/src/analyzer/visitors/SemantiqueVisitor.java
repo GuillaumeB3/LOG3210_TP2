@@ -87,6 +87,17 @@ public class SemantiqueVisitor implements ParserVisitor {
     public Object visit(ASTDeclaration node, Object data) {
         String varName = ((ASTIdentifier) node.jjtGetChild(0)).getValue();
         // TODO
+
+        if (node.getValue().equals("num")) {
+            SymbolTable.put(varName, VarType.Number);
+            VAR++;
+        } else if (node.getValue().equals("bool")) {
+            SymbolTable.put(varName, VarType.Bool);
+            VAR++;
+        } else {
+            // throw
+        }
+
         return null;
     }
 
@@ -152,12 +163,16 @@ public class SemantiqueVisitor implements ParserVisitor {
     @Override
     public Object visit(ASTAssignStmt node, Object data) {
         // TODO
+        node.childrenAccept(this, data);
+
         return null;
     }
 
     @Override
     public Object visit(ASTExpr node, Object data) {
         // TODO
+        node.childrenAccept(this, data);
+
         return null;
     }
 
@@ -172,6 +187,8 @@ public class SemantiqueVisitor implements ParserVisitor {
             soit le même des deux côtés de l'égalité/l'inégalité.
         */
         // TODO
+        node.jjtGetChild(0).jjtAccept(this, data);
+
         return null;
     }
 
@@ -185,6 +202,9 @@ public class SemantiqueVisitor implements ParserVisitor {
     public Object visit(ASTAddExpr node, Object data) {
         // TODO
         int numChildren = node.jjtGetNumChildren();
+        if (numChildren > 1) {
+            OP++;
+        }
         for (int i = 0; i < numChildren; i++) {
             DataStruct d = new DataStruct();
             node.jjtGetChild(i).jjtAccept(this, d);
