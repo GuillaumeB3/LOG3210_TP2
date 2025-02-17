@@ -1,0 +1,8 @@
+Declaration
+
+EndDeclaration
+
+num a(num b, num c){
+    c = b + 1;
+    return c;
+}

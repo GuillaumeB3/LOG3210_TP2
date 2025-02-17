@@ -1,0 +1,7 @@
+Declaration
+
+EndDeclaration
+
+bool a(){
+    return true;
+}

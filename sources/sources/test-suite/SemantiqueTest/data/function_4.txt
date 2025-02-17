@@ -1,0 +1,13 @@
+Declaration
+
+EndDeclaration
+
+num a(bool b, num c, num d){
+    if (b) {
+        c = d * 10;
+    }
+    else {
+        c = d / 10;
+    }
+    return c;
+}
