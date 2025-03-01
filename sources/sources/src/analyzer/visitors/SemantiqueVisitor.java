@@ -135,7 +135,7 @@ public class SemantiqueVisitor implements ParserVisitor {
         node.jjtGetChild(0).jjtAccept(this, d);
         System.out.println("Noeud Type : " + d.type);
 
-        if (!d.type.equals(VarType.Bool)) {
+        if (d.type != null && !d.type.equals(VarType.Bool)) {
             throw new SemantiqueError("Invalid type in condition");
         }
         // TODO
@@ -153,8 +153,9 @@ public class SemantiqueVisitor implements ParserVisitor {
     public Object visit(ASTIfStmt node, Object data) {;
         System.out.println("Noeud : " + node);
         callChildrenCond(node);
-        node.childrenAccept(this, data);
         System.out.println(node + " : " + ((DataStruct) data).type);
+
+        IF++;
 
         // TODO : Fiez vous aux langages pour determiner les noeuds enfants possible
         return null;
@@ -165,7 +166,6 @@ public class SemantiqueVisitor implements ParserVisitor {
         // TODO
         System.out.println("Noeud : " + node);
         callChildrenCond(node);
-        node.childrenAccept(this, data);
         System.out.println(node + " : " + ((DataStruct) data).type);
 
         return null;
@@ -175,9 +175,14 @@ public class SemantiqueVisitor implements ParserVisitor {
     public Object visit(ASTFunctionStmt node, Object data) {
         // TODO
         System.out.println("Noeud : " + node);
-        callChildrenCond(node);
+        int numChildren = node.jjtGetNumChildren();
+        System.out.println("Valeur de func : " + node.getValue());
+        System.out.println("Nombre enfants : " + numChildren);
+
         node.childrenAccept(this, data);
         System.out.println(node + " : " + ((DataStruct) data).type);
+
+        FUNC++;
 
         return null;
     }
@@ -186,7 +191,6 @@ public class SemantiqueVisitor implements ParserVisitor {
     public Object visit(ASTFunctionBlock node, Object data) {
         // TODO
         System.out.println("Noeud : " + node);
-        callChildrenCond(node);
         node.childrenAccept(this, data);
         System.out.println(node + " : " + ((DataStruct) data).type);
 
@@ -199,6 +203,16 @@ public class SemantiqueVisitor implements ParserVisitor {
         System.out.println("Noeud : " + node);
         node.childrenAccept(this, data);
         System.out.println(node + " : " + ((DataStruct) data).type);
+
+        VarType returnType = ((DataStruct) data).type;
+        String functionTypeStr = ((ASTFunctionStmt) node.jjtGetParent()).getValue();
+        VarType functionType;
+        if (functionTypeStr.equals("num")) functionType = VarType.Number;
+        else functionType = VarType.Bool;
+
+        if (!returnType.equals(functionType)) {
+            throw new SemantiqueError("Return type does not match function type");
+        }
 
         return null;
     }
@@ -270,6 +284,7 @@ public class SemantiqueVisitor implements ParserVisitor {
     public Object visit(ASTAddExpr node, Object data) {
         // TODO
         System.out.println("Noeud : " + node);
+        System.out.println("Le OPS : " + node.getOps());
         /*
         int numChildren = node.jjtGetNumChildren();
         for (int i = 0; i < numChildren; i++) {
@@ -281,6 +296,7 @@ public class SemantiqueVisitor implements ParserVisitor {
 
         if (node.jjtGetNumChildren() > 1) {
             ((DataStruct)data).type = VarType.Number;
+            OP++;
         } else {
             node.jjtGetChild(0).jjtAccept(this, data);
         }
@@ -302,6 +318,7 @@ public class SemantiqueVisitor implements ParserVisitor {
 
         if (node.jjtGetNumChildren() > 1) {
             ((DataStruct)data).type = VarType.Number;
+            OP++;
         } else {
             node.jjtGetChild(0).jjtAccept(this, data);
         }
