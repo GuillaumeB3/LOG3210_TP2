@@ -89,6 +89,9 @@ public class SemantiqueVisitor implements ParserVisitor {
         System.out.println("Noeud : " + node);
         System.out.println("Node.getValue() : " + node.getValue());
 
+        if (SymbolTable.containsKey(varName)) {
+            throw new SemantiqueError(String.format("Identifier %s has multiple declarations", varName));
+        }
         if (node.getValue().equals("num")) {
             SymbolTable.put(varName, VarType.Number);
             VAR++;
