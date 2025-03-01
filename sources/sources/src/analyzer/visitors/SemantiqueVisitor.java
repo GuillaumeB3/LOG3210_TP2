@@ -168,6 +168,8 @@ public class SemantiqueVisitor implements ParserVisitor {
         callChildrenCond(node);
         System.out.println(node + " : " + ((DataStruct) data).type);
 
+        WHILE++;
+
         return null;
     }
 
@@ -250,6 +252,10 @@ public class SemantiqueVisitor implements ParserVisitor {
             data = new DataStruct();
         }
 
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            System.out.println("Enfant #" + (i + 1) + " : " + node.jjtGetChild(i));
+        }
+
         node.childrenAccept(this, data);
 
         System.out.println(node + " : " + ((DataStruct) data).type);
@@ -271,6 +277,13 @@ public class SemantiqueVisitor implements ParserVisitor {
         System.out.println("Noeud : " + node);
         node.childrenAccept(this, data);
         System.out.println(node + " : " + ((DataStruct) data).type);
+        int numChildren = node.jjtGetNumChildren();
+
+        if (numChildren > 1) {
+            ((DataStruct) data).type = VarType.Bool;
+            OP++;
+        }
+
         return null;
     }
 
@@ -285,18 +298,11 @@ public class SemantiqueVisitor implements ParserVisitor {
         // TODO
         System.out.println("Noeud : " + node);
         System.out.println("Le OPS : " + node.getOps());
-        /*
-        int numChildren = node.jjtGetNumChildren();
-        for (int i = 0; i < numChildren; i++) {
-            DataStruct d = new DataStruct();
-            node.jjtGetChild(i).jjtAccept(this, d);
-            System.out.println(node + " : " + ((DataStruct) d).type);
-
-        }*/
 
         if (node.jjtGetNumChildren() > 1) {
             ((DataStruct)data).type = VarType.Number;
             OP++;
+            node.childrenAccept(this, data);
         } else {
             node.jjtGetChild(0).jjtAccept(this, data);
         }
@@ -308,17 +314,12 @@ public class SemantiqueVisitor implements ParserVisitor {
     public Object visit(ASTMulExpr node, Object data) {
         // TODO
         System.out.println("Noeud : " + node);
-        /*
-        int numChildren = node.jjtGetNumChildren();
-        for (int i = 0; i < numChildren; i++) {
-            DataStruct d = new DataStruct();
-            node.jjtGetChild(i).jjtAccept(this, d);
-            System.out.println(node + " : " + ((DataStruct) d).type);
-        }*/
+        System.out.println("MUL OPS : " + node.getOps());
 
         if (node.jjtGetNumChildren() > 1) {
             ((DataStruct)data).type = VarType.Number;
             OP++;
+            node.childrenAccept(this, data);
         } else {
             node.jjtGetChild(0).jjtAccept(this, data);
         }
@@ -330,16 +331,12 @@ public class SemantiqueVisitor implements ParserVisitor {
     public Object visit(ASTBoolExpr node, Object data) {
         // TODO
         System.out.println("Noeud : " + node);
-
-        /*int numChildren = node.jjtGetNumChildren();
-        for (int i = 0; i < numChildren; i++) {
-            DataStruct d = new DataStruct();
-            node.jjtGetChild(i).jjtAccept(this, d);
-            System.out.println(node + " : " + d.type);
-        }*/
+        System.out.println("OPS MAGIQUE : " + node.getOps());
 
         if (node.jjtGetNumChildren() > 1) {
             ((DataStruct)data).type = VarType.Bool;
+            OP++;
+            node.childrenAccept(this, data);
         } else {
             node.jjtGetChild(0).jjtAccept(this, data);
         }
@@ -359,8 +356,14 @@ public class SemantiqueVisitor implements ParserVisitor {
     public Object visit(ASTNotExpr node, Object data) {
         // TODO
         System.out.println("Noeud : " + node);
+        System.out.println("OPS MACHIN : " + node.getOps());
+
         node.childrenAccept(this, data);
         System.out.println(node + " : " + ((DataStruct) data).type);
+
+        if (!node.getOps().isEmpty() && node.getOps().get(0).toString().equals("!")) {
+            OP++;
+        }
 
         return null;
     }
@@ -369,9 +372,13 @@ public class SemantiqueVisitor implements ParserVisitor {
     public Object visit(ASTUnaExpr node, Object data) {
         // TODO
         System.out.println("Noeud : " + node);
+        System.out.println("OPS UNA : " + node.getOps());
         node.childrenAccept(this, data);
         System.out.println(node + " : " + ((DataStruct) data).type);
 
+        if (!node.getOps().isEmpty() && node.getOps().get(0).toString().equals("-")) {
+            OP++;
+        }
 
         return null;
     }
